@@ -76,7 +76,7 @@ func main() {
 		logger.Config{
 			SlowThreshold: time.Second,
 			LogLevel:      logger.Info,
-			Colorful:      true,
+			Colorful:      false,
 		},
 	)
 

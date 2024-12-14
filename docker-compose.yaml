@@ -15,23 +15,24 @@ services:
     networks:
       - project_network
   
-  # auth-service:
-  #   build: .
-  #   container_name: auth-service
-  #   environment:
-  #     - DB_HOST=db
-  #     - DB_PORT=5432
-  #     - DB_USER=admin
-  #     - DB_PASSWORD=P@ssw0rd
-  #     - DB_NAME=project_mgmt
-  #     - JWT_KEY=P@ssw0rd
-  #   ports:
-  #     - "3000:3000"
-  #   networks:
-  #     - project_network
-  #   depends_on:
-  #     - db
-  #   restart: unless-stopped
+  auth-service:
+    build: .
+    image: go-auth-service:v1
+    container_name: auth-service
+    environment:
+      - DB_HOST=db
+      - DB_PORT=5432
+      - DB_USER=admin
+      - DB_PASSWORD=P@ssw0rd
+      - DB_NAME=project_mgmt
+      - JWT_KEY=P@ssw0rd
+    ports:
+      - "3000:3000"
+    networks:
+      - project_network
+    depends_on:
+      - db
+    restart: unless-stopped
 
 volumes:
   postgres_data:
