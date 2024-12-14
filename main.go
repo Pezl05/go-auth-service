@@ -9,6 +9,7 @@ import (
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
+	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
@@ -38,8 +39,21 @@ func authRequired(c *fiber.Ctx) error {
 
 func main() {
 
-	// Database Information from env
+	// Set Database Connection
 	host := os.Getenv("DB_HOST")
+	logPath := "/var/log/gorm.log"
+
+	if host == "" {
+		// Load .env file
+		err := godotenv.Load()
+		if err != nil {
+			log.Println("Error loading .env file")
+		} else {
+			host = os.Getenv("DB_HOST")
+			logPath = "./gorm.log"
+		}
+	}
+
 	port, _ := strconv.Atoi(os.Getenv("DB_PORT"))
 	user := os.Getenv("DB_USER")
 	password := os.Getenv("DB_PASSWORD")
@@ -51,7 +65,7 @@ func main() {
 		host, port, user, password, dbname)
 
 	// Config Logger
-	logFile, err := os.OpenFile("/var/log/gorm.log", os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	logFile, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
 	if err != nil {
 		panic(err)
 	}

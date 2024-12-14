@@ -21,14 +21,17 @@ Content-Type: application/json
 ### GET Request
 GET http://127.0.0.1:3000/api/v1/users
 Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGF1dGguY29tIiwiZXhwIjoxNzM0MjY5MTA2LCJmdWxsX25hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4ifQ.PLWYfRLBqpHjD_n2u6Q7wRTtUV-hfynAjIxwQDfN9Vw;
 
 ### GET Request
 GET http://127.0.0.1:3000/api/v1/users/1
 Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGF1dGguY29tIiwiZXhwIjoxNzM0MjY5MTA2LCJmdWxsX25hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4ifQ.PLWYfRLBqpHjD_n2u6Q7wRTtUV-hfynAjIxwQDfN9Vw;
 
 ### PUT Request
 PUT http://127.0.0.1:3000/api/v1/users/1
 Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGF1dGguY29tIiwiZXhwIjoxNzM0MjY5MTA2LCJmdWxsX25hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4ifQ.PLWYfRLBqpHjD_n2u6Q7wRTtUV-hfynAjIxwQDfN9Vw;
 
 {
     "full_name": "super admin",
@@ -38,3 +41,4 @@ Content-Type: application/json
 ### DELETE Request
 DELETE  http://127.0.0.1:3000/api/v1/users/2
 Content-Type: application/json
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGF1dGguY29tIiwiZXhwIjoxNzM0MjY5MTA2LCJmdWxsX25hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4ifQ.PLWYfRLBqpHjD_n2u6Q7wRTtUV-hfynAjIxwQDfN9Vw;
