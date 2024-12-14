@@ -1,0 +1,40 @@
+### POST Request
+POST http://127.0.0.1:3000/api/v1/register
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "email": "admin@auth.com",
+    "password": "P@ssw0rd",
+    "full_name": "admin"
+}
+
+### POST Request
+POST http://127.0.0.1:3000/api/v1/login
+Content-Type: application/json
+
+{
+    "username": "admin",
+    "password": "P@ssw0rd"
+}
+
+### GET Request
+GET http://127.0.0.1:3000/api/v1/users
+Content-Type: application/json
+
+### GET Request
+GET http://127.0.0.1:3000/api/v1/users/1
+Content-Type: application/json
+
+### PUT Request
+PUT http://127.0.0.1:3000/api/v1/users/1
+Content-Type: application/json
+
+{
+    "full_name": "super admin",
+    "role": "admin"
+}
+
+### DELETE Request
+DELETE  http://127.0.0.1:3000/api/v1/users/2
+Content-Type: application/json

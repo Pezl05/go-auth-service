@@ -1,0 +1,39 @@
+# Build Result file
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Binary or Build Result
+bin/
+*.out
+*.o
+
+# IDE Files
+.idea/
+.vscode/
+*.swp
+*.swo
+.DS_Store
+
+# Module & Cache
+vendor/
+go.sum
+go.work
+go.work.sum
+
+# Directory Cache
+GOPATH/pkg/
+GOPATH/bin/
+
+# Config
+.env
+config.json
+*.key
+*.pem
+
+# Log
+logs/
+*.log
+*.tmp

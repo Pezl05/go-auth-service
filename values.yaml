@@ -1,0 +1,22 @@
+replicaCount: 1
+appName: backend
+
+image:
+  repository: harbor.pezl.local/app-test1/app1/go-auth-service
+  tag: "v1"
+  pullPolicy: IfNotPresent
+
+service:
+  type: NodePort
+  port: 3000
+  targetPort: 3000
+  nodePort: 30090
+
+env_enabled: true
+env:
+  DB_HOST: db
+  DB_PORT: 5432
+  DB_USER: admin
+  DB_PASSWORD: P@ssw0rd
+  DB_NAME: project_mgmt
+  JWT_KEY: P@ssw0rd
