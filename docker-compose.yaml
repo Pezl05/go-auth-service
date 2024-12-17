@@ -3,13 +3,13 @@ version: '3.8'
 services:
   db:
     image: postgres:latest
-    container_name: project_mgmt_db
+    container_name: database
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: P@ssw0rd
       POSTGRES_DB: project_mgmt
     volumes:
-      - ./database/data:/var/lib/postgresql/data
+      - ../database/data:/var/lib/postgresql/data
     ports:
       - "5432:5432"
     networks:

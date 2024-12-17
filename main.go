@@ -120,7 +120,7 @@ func main() {
 		return getUser(db, c)
 	})
 
-	apiGroup.Put("/users/:id", func(c *fiber.Ctx) error {
+	apiGroup.Patch("/users/:id", func(c *fiber.Ctx) error {
 		return updateUser(db, c)
 	})
 

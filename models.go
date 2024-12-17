@@ -30,6 +30,14 @@ func register(db *gorm.DB, c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
+	var existingUser User
+	if err := db.Where("username = ? OR email = ?", user.Username, user.Email).First(&existingUser).Error; err == nil {
+		// Username already exists
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Username already exists",
+		})
+	}
+
 	// Encrypt Password
 	hashedPassword, err := bcrypt.GenerateFromPassword(
 		[]byte(user.Password),
@@ -43,7 +51,9 @@ func register(db *gorm.DB, c *fiber.Ctx) error {
 	user.Password = string(hashedPassword)
 	result := db.Create(&user)
 	if result.Error != nil {
-		return c.SendStatus(fiber.StatusBadRequest)
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"message": "Failed to register user",
+		})
 	}
 
 	return c.JSON(fiber.Map{
@@ -108,9 +118,19 @@ func login(db *gorm.DB, c *fiber.Ctx) error {
 
 func listUser(db *gorm.DB, c *fiber.Ctx) error {
 	var users []User
+	name := c.Query("name")
+	role := c.Query("role")
+
+	query := db.Model(&User{})
+	if name != "" {
+		query = query.Where("full_name ILIKE ?", "%"+name+"%")
+	}
+	if role != "" {
+		query = query.Where("role = ?", role)
+	}
 
 	// Get All User
-	result := db.Find(&users)
+	result := query.Find(&users)
 	if result.Error != nil {
 		log.Println("Error Get user:", result.Error)
 		return c.Status(fiber.StatusNotFound).SendString("User not found")
