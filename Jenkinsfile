@@ -7,19 +7,16 @@ pipeline {
     
     parameters {
         choice(name: 'IMAGE_NAME', 
-               choices: ['go-auth-service', 'nestjs-project-service', 'python-task-service', 'nextjs-front-service'], 
-               defaultValue: 'go-auth-service')
+               choices: ['go-auth-service', 'nestjs-project-service', 'python-task-service', 'nextjs-front-service'])
                
         string(name: 'IMAGE_TAG', 
                defaultValue: 'latest', )
 
         choice(name: 'IMAGE_SEVERITY_LEVELS', 
-               choices: ['UNKNOWN', 'LOW', 'MEDIUM', 'HIGH', 'CRITICAL'], 
-               defaultValue: 'HIGH')
+               choices: ['CRITICAL', 'HIGH', 'MEDIUM', 'LOW', 'UNKNOWN'])
 
         choice(name: 'VULNERABILITY_TYPES', 
-               choices: ['os,library','os','library'], 
-               defaultValue: 'os,library')
+               choices: ['os,library','os','library'])
     }
 
     stages {
