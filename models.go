@@ -144,6 +144,8 @@ func login(db *gorm.DB, c *fiber.Ctx) error {
 		SameSite: "None",
 	})
 
+	log.Printf("Login successful for user: %s", inputUser.Username)
+
 	return c.JSON(fiber.Map{
 		"message": "Login Successful",
 	})
