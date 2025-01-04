@@ -1,5 +1,5 @@
 replicaCount: 1
-appName: go-auth-service
+appName: auth-service
 
 image:
   repository: harbor.pezl.local/app-test1/app1/go-auth-service
