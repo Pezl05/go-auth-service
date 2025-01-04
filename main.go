@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/gofiber/fiber/v2"
+	"github.com/gofiber/fiber/v2/middleware/cors"
 	"github.com/golang-jwt/jwt/v4"
 	"github.com/joho/godotenv"
 	"gorm.io/driver/postgres"
@@ -96,13 +97,13 @@ func main() {
 
 	// SetUp Fiber
 	app := fiber.New()
-	// app.Use(cors.New(cors.Config{
-	// 	AllowOrigins:     os.Getenv("ALLOW_ORIGIN"),
-	// 	AllowCredentials: true,
-	// 	AllowMethods:     "GET,POST,PUT,DELETE",
-	// 	AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
-	// 	MaxAge:           3600,
-	// }))
+	app.Use(cors.New(cors.Config{
+		AllowOrigins:     os.Getenv("ALLOW_ORIGIN"),
+		AllowCredentials: true,
+		AllowMethods:     "GET,POST,PUT,DELETE",
+		AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+		MaxAge:           3600,
+	}))
 
 	apiGroup := app.Group("/api/v1")
 	apiGroup.Use("/users", authRequired)
