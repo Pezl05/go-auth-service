@@ -24,6 +24,39 @@ type User struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 }
 
+func createAdminUser(db *gorm.DB) {
+	var admin User
+	result := db.Where("role = ?", "admin").First(&admin)
+
+	if result.Error != nil && result.Error == gorm.ErrRecordNotFound {
+
+		fullName := "Admin User"
+		admin = User{
+			Username: "admin",
+			Email:    "admin@example.com",
+			Password: os.Getenv("ADMIN_PASSWORD"),
+			FullName: &fullName,
+			Role:     "admin",
+		}
+
+		hashedPassword, err := bcrypt.GenerateFromPassword(
+			[]byte(admin.Password),
+			bcrypt.DefaultCost,
+		)
+		if err != nil {
+			log.Fatalf("Error hashing password: %v", err)
+		}
+
+		// Create Admin
+		admin.Password = string(hashedPassword)
+		result := db.Create(&admin)
+
+		if result.Error != nil {
+			log.Fatalf("Error creating admin user: %v", result.Error)
+		}
+	}
+}
+
 func register(db *gorm.DB, c *fiber.Ctx) error {
 	var user User
 	if err := c.BodyParser(&user); err != nil {

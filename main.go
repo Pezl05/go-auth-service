@@ -92,13 +92,16 @@ func main() {
 	// Migrate Database
 	db.AutoMigrate(&User{})
 	fmt.Println("Database migration completed!")
+	createAdminUser(db)
 
 	// SetUp Fiber
 	app := fiber.New()
-
 	// app.Use(cors.New(cors.Config{
-	// 	AllowOrigins:     "http://localhost:3001",
+	// 	AllowOrigins:     os.Getenv("ALLOW_ORIGIN"),
 	// 	AllowCredentials: true,
+	// 	AllowMethods:     "GET,POST,PUT,DELETE",
+	// 	AllowHeaders:     "Origin, Content-Type, Accept, Authorization",
+	// 	MaxAge:           3600,
 	// }))
 
 	apiGroup := app.Group("/api/v1")
