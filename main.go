@@ -5,7 +5,6 @@ import (
 	"log"
 	"os"
 	"strconv"
-	"time"
 
 	"github.com/gofiber/fiber/v2"
 	"github.com/golang-jwt/jwt/v4"
@@ -28,7 +27,6 @@ func authRequired(c *fiber.Ctx) error {
 	}
 
 	claims := token.Claims.(jwt.MapClaims)
-	fmt.Println(claims)
 
 	if claims["role"].(string) != "admin" {
 		return c.SendStatus(fiber.StatusForbidden)
@@ -38,19 +36,17 @@ func authRequired(c *fiber.Ctx) error {
 }
 
 func main() {
-
-	// Set Database Connection
+	log.SetFlags(0)
 	host := os.Getenv("DB_HOST")
-	logPath := "/var/log/gorm.log"
+	// logPath := "/var/log/gorm.log"
 
 	if host == "" {
-		// Load .env file
 		err := godotenv.Load()
 		if err != nil {
-			log.Println("Error loading .env file")
+			logging("ERROR", "Error loading .env file")
 		} else {
 			host = os.Getenv("DB_HOST")
-			logPath = "./gorm.log"
+			// logPath = "./gorm.log"
 		}
 	}
 
@@ -59,42 +55,37 @@ func main() {
 	password := os.Getenv("DB_PASSWORD")
 	dbname := os.Getenv("DB_NAME")
 
-	// Database Connection
 	dsn := fmt.Sprintf("host=%s port=%d user=%s "+
 		"password=%s dbname=%s sslmode=disable",
 		host, port, user, password, dbname)
 
-	// Config Logger
-	logFile, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
-	if err != nil {
-		panic(err)
-	}
-	defer logFile.Close()
+	// logFile, err := os.OpenFile(logPath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0666)
+	// if err != nil {
+	// 	panic(err)
+	// }
+	// defer logFile.Close()
 
-	newLogger := logger.New(
-		log.New(logFile, "", log.LstdFlags),
-		logger.Config{
-			SlowThreshold: time.Second,
-			LogLevel:      logger.Info,
-			Colorful:      false,
-		},
-	)
+	// newLogger := logger.New(
+	// 	log.New(logFile, "", log.LstdFlags),
+	// 	logger.Config{
+	// 		SlowThreshold: time.Second,
+	// 		LogLevel:      logger.Info,
+	// 		Colorful:      false,
+	// 	},
+	// )
 
-	// Connect Database
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
-		Logger: newLogger,
+		Logger: logger.Default.LogMode(logger.Silent),
 	})
 
 	if err != nil {
 		panic("failed to connect to database")
 	}
 
-	// Migrate Database
 	db.AutoMigrate(&User{})
-	fmt.Println("Database migration completed!")
+	logging("INFO", "Database migration completed!")
 	createAdminUser(db)
 
-	// SetUp Fiber
 	app := fiber.New()
 	// app.Use(cors.New(cors.Config{
 	// 	AllowOrigins:     os.Getenv("ALLOW_ORIGIN"),
@@ -106,6 +97,7 @@ func main() {
 
 	apiGroup := app.Group("/api/v1")
 	apiGroup.Use("/users", authRequired)
+	apiGroup.Use("/register", authRequired)
 
 	apiGroup.Post("/register", func(c *fiber.Ctx) error {
 		return register(db, c)

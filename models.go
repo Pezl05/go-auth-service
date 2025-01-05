@@ -24,12 +24,17 @@ type User struct {
 	DeletedAt gorm.DeletedAt `gorm:"index" json:"deleted_at,omitempty"`
 }
 
+func logging(level, message string) {
+	currentTime := time.Now().Format("2006-01-02 15:04:05")
+	log.SetFlags(0)
+	log.Printf("%s [%s] [Go Fiber] - %s", currentTime, level, message)
+}
+
 func createAdminUser(db *gorm.DB) {
 	var admin User
 	result := db.Where("role = ?", "admin").First(&admin)
 
 	if result.Error != nil && result.Error == gorm.ErrRecordNotFound {
-
 		fullName := "Admin User"
 		admin = User{
 			Username: "admin",
@@ -44,16 +49,18 @@ func createAdminUser(db *gorm.DB) {
 			bcrypt.DefaultCost,
 		)
 		if err != nil {
-			log.Fatalf("Error hashing password: %v", err)
+			logging("ERROR", "Error hashing password: "+err.Error())
+			return
 		}
 
-		// Create Admin
 		admin.Password = string(hashedPassword)
 		result := db.Create(&admin)
 
 		if result.Error != nil {
-			log.Fatalf("Error creating admin user: %v", result.Error)
+			logging("ERROR", "Error creating admin user: "+result.Error.Error())
 		}
+
+		logging("INFO", "Admin user created successfully: "+admin.Username)
 	}
 }
 
@@ -65,25 +72,24 @@ func register(db *gorm.DB, c *fiber.Ctx) error {
 
 	var existingUser User
 	if err := db.Where("username = ? OR email = ?", user.Username, user.Email).First(&existingUser).Error; err == nil {
-		// Username already exists
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Username already exists",
 		})
 	}
 
-	// Encrypt Password
 	hashedPassword, err := bcrypt.GenerateFromPassword(
 		[]byte(user.Password),
 		bcrypt.DefaultCost,
 	)
 	if err != nil {
+		logging("ERROR", "Error hashing password: "+err.Error())
 		return err
 	}
 
-	// Create user
 	user.Password = string(hashedPassword)
 	result := db.Create(&user)
 	if result.Error != nil {
+		logging("ERROR", "Failed to register user: "+result.Error.Error())
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"message": "Failed to register user",
 		})
@@ -101,17 +107,14 @@ func login(db *gorm.DB, c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusBadRequest)
 	}
 
-	// Search User from Username or Email
 	result := db.Where(
 		"username = ? OR email = ?",
 		inputUser.Username, inputUser.Username,
 	).First(&user)
-
 	if result.Error != nil {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
-	// Compare Hash Password
 	if err := bcrypt.CompareHashAndPassword(
 		[]byte(user.Password),
 		[]byte(inputUser.Password),
@@ -119,7 +122,6 @@ func login(db *gorm.DB, c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
-	// Create JWT Token
 	jwtSecretKey := os.Getenv("JWT_KEY")
 	token := jwt.New(jwt.SigningMethodHS256)
 	claims := token.Claims.(jwt.MapClaims)
@@ -135,7 +137,6 @@ func login(db *gorm.DB, c *fiber.Ctx) error {
 		return c.SendStatus(fiber.StatusUnauthorized)
 	}
 
-	// Set Cookie
 	c.Cookie(&fiber.Cookie{
 		Name:     "jwt",
 		Value:    t,
@@ -144,8 +145,7 @@ func login(db *gorm.DB, c *fiber.Ctx) error {
 		SameSite: "None",
 	})
 
-	log.Printf("Login successful for user: %s", inputUser.Username)
-
+	logging("INFO", "Login successful for user: "+user.Username)
 	return c.JSON(fiber.Map{
 		"message": "Login Successful",
 	})
@@ -164,10 +164,9 @@ func listUser(db *gorm.DB, c *fiber.Ctx) error {
 		query = query.Where("role = ?", role)
 	}
 
-	// Get All User
 	result := query.Find(&users)
 	if result.Error != nil {
-		log.Println("Error Get user:", result.Error)
+		logging("ERROR", "Error getting users: "+result.Error.Error())
 		return c.Status(fiber.StatusNotFound).SendString("User not found")
 	}
 
@@ -177,11 +176,9 @@ func listUser(db *gorm.DB, c *fiber.Ctx) error {
 func getUser(db *gorm.DB, c *fiber.Ctx) error {
 	id := c.Params("id")
 
-	// Get User By Id
 	var user User
 	result := db.First(&user, id)
 	if result.Error != nil {
-		log.Println("Error Get user:", result.Error)
 		return c.Status(fiber.StatusNotFound).SendString("User not found")
 	}
 
@@ -200,22 +197,20 @@ func updateUser(db *gorm.DB, c *fiber.Ctx) error {
 	}
 	inputUser.UserID = uint(id)
 
-	// Encrypt Password
 	if inputUser.Password != "" {
 		hashedPassword, err := bcrypt.GenerateFromPassword(
 			[]byte(inputUser.Password),
 			bcrypt.DefaultCost,
 		)
 		if err != nil {
+			logging("ERROR", "Error hashing password: "+err.Error())
 			return err
 		}
 		inputUser.Password = string(hashedPassword)
 	}
 
-	// Update User
 	result := db.Model(&inputUser).Updates(inputUser)
 	if result.Error != nil {
-		log.Println("Error Get user:", result.Error)
 		return c.Status(fiber.StatusNotFound).SendString("User not found")
 	}
 
@@ -228,13 +223,13 @@ func deleteUser(db *gorm.DB, c *fiber.Ctx) error {
 	id := c.Params("id")
 	var user User
 
-	// Delete User
 	result := db.Delete(&user, id)
 	if result.Error != nil {
-		log.Println("Error Get user:", result.Error)
+		logging("ERROR", "Error deleting user by ID: "+id+" - "+result.Error.Error())
 		return c.Status(fiber.StatusNotFound).SendString("User not found")
 	}
 
+	logging("INFO", "User deleted successfully: ID "+id)
 	return c.JSON(fiber.Map{
 		"message": "Delete Successful",
 	})
