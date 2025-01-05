@@ -1,0 +1,26 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: auth-mgmt-cd
+  namespace: argocd
+spec:
+  project: default
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true
+  destination:
+    server: https://kubernetes.default.svc
+    namespace: project-mgmt
+  sources:
+    - repoURL: 'https://github.com/Pezl05/helm-template.git'
+      path: service-chart
+      targetRevision: main
+      helm:
+        valueFiles:
+          - $values/helmValues.yaml
+    - repoURL: 'https://github.com/Pezl05/go-auth-service.git'
+      targetRevision: main
+      ref: values
