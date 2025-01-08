@@ -4,7 +4,7 @@ appName: auth-mgmt
 image:
   repository: "harbor.pezl.local/project_mgmt/go-auth-service"
   tag: "latest"
-  pullPolicy: IfNotPresent
+  pullPolicy: Always
 
 service:
   type: ClusterIP
