@@ -22,6 +22,11 @@ ingress:
   pathType: ImplementationSpecific
 
 env:
+   OTEL_RESOURCE_ATTRIBUTES: "service.name=auth-service"
+   OTEL_EXPORTER_OTLP_ENDPOINT: http://jaeger-collector.observability:4317
+   OTEL_LOG_LEVEL: error
+
+secret:
   DB_HOST: "psql-mgmt-postgresql"
   DB_PORT: "5432"
   DB_USER: "admin"
