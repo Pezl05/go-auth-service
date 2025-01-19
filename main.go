@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
@@ -12,6 +13,13 @@ import (
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
+	"go.opentelemetry.io/otel/propagation"
+	"go.opentelemetry.io/otel/sdk/resource"
+	"go.opentelemetry.io/otel/sdk/trace"
+	semconv "go.opentelemetry.io/otel/semconv/v1.4.0"
 )
 
 func authRequired(c *fiber.Ctx) error {
@@ -33,6 +41,27 @@ func authRequired(c *fiber.Ctx) error {
 	}
 
 	return c.Next()
+}
+
+func initTracer() *trace.TracerProvider {
+	exporter, err := otlptracegrpc.New(
+		context.Background(),
+		otlptracegrpc.WithInsecure(),
+	)
+	if err != nil {
+		logging("ERROR", "failed to export init Tracer"+err.Error())
+	}
+	tp := trace.NewTracerProvider(
+		trace.WithSampler(trace.AlwaysSample()),
+		trace.WithBatcher(exporter),
+		trace.WithResource(resource.NewWithAttributes(
+			semconv.SchemaURL,
+			semconv.ServiceNameKey.String("auth-service"),
+		)),
+	)
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.NewCompositeTextMapPropagator(propagation.TraceContext{}, propagation.Baggage{}))
+	return tp
 }
 
 func main() {
@@ -85,6 +114,15 @@ func main() {
 	db.AutoMigrate(&User{})
 	logging("INFO", "Database migration completed!")
 	createAdminUser(db)
+
+	otel.GetTracerProvider().Tracer("gorm-tracer")
+
+	tp := initTracer()
+	defer func() {
+		if err := tp.Shutdown(context.Background()); err != nil {
+			logging("ERROR", "Error shutting down tracer provider: "+err.Error())
+		}
+	}()
 
 	app := fiber.New()
 	// app.Use(cors.New(cors.Config{

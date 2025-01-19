@@ -21,7 +21,7 @@ Content-Type: application/json
 ### GET Request
 GET http://127.0.0.1:3000/api/v1/users
 Content-Type: application/json
-Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGF1dGguY29tIiwiZXhwIjoxNzM0MjY5MTA2LCJmdWxsX25hbWUiOiJhZG1pbiIsInJvbGUiOiJhZG1pbiIsInVzZXJfaWQiOjEsInVzZXJuYW1lIjoiYWRtaW4ifQ.PLWYfRLBqpHjD_n2u6Q7wRTtUV-hfynAjIxwQDfN9Vw;
+Cookie: jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwiZXhwIjoxNzM3MzkwNjM2LCJmdWxsX25hbWUiOiJBZG1pbiBVc2VyIiwicm9sZSI6ImFkbWluIiwidXNlcl9pZCI6MSwidXNlcm5hbWUiOiJhZG1pbiJ9.tj5mKgJYjxDDuiyha6rwiruT0Y1N13jdZfuWqghlaTg;
 
 ### GET Request
 GET http://127.0.0.1:3000/api/v1/users/1
