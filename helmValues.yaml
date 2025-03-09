@@ -6,6 +6,10 @@ image:
   tag: "latest"
   pullPolicy: Always
 
+registry:
+  name: harbor
+  secret: ewogICJhdXRocyI6IHsKICAgICJoYXJib3IucGV6bC5sb2NhbCI6IHsKICAgICAgImF1dGgiOiAiWVdSdGFXNDZTR0Z5WW05eU1USXpORFU9IgogICAgfQogIH0KfQ==
+  
 service:
   type: ClusterIP
   port: 3000
