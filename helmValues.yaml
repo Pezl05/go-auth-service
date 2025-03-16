@@ -6,6 +6,9 @@ image:
   tag: "latest"
   pullPolicy: Always
   
+registry:
+  secret: ewoJImF1dGhzIjogewoJCSJoYXJib3IucGV6bC5sb2NhbCI6IHsKCQkJImF1dGgiOiAiWVdSdGFXNDZVRUJ6YzNjd2NtUT0iCgkJfQoJfQp9
+
 service:
   type: ClusterIP
   port: 3000
